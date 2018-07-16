@@ -51,7 +51,7 @@ class GetSMSCodeClient {
     ow(username, ow.string.nonEmpty.label('username'))
     ow(token, ow.string.nonEmpty.label('token'))
     ow(domain, ow.string.nonEmpty.label('domain'))
-    ow(opts, ow.object.plain.nonEmpty.label('opts'))
+    ow(opts, ow.object.plain.label('opts'))
 
     this._token = token
     this._username = username
