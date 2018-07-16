@@ -8,6 +8,7 @@
   "license": "MIT",
   "reveal": true,
   "scripts": {
+    "docs": "update-markdown-jsdoc --no-markdown-toc",
     "test": "ava -v && standard"
   },
   "engines": {
@@ -40,6 +41,7 @@
   "devDependencies": {
     "ava": "^0.25.0",
     "standard": "^11.0.0",
+    "update-markdown-jsdoc": "^1.0.6",
     "validator": "^10.4.0"
   },
   "dependencies": {
