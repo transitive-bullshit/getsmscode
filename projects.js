@@ -351,7 +351,7 @@ exports.pidToService = { }
 
 projects.forEach((project) => {
   const service = project.service.toLowerCase().trim()
-  const pid = project.pid
+  const pid = project.pid + ''
 
   exports.serviceToPID[service] = pid
   exports.pidToService[pid] = service

@@ -1,57 +1,106 @@
 'use strict'
 
 const ow = require('ow')
-const pRetry = require('p-retry')
 const request = require('request-promise-native')
 
-module.exports = async (opts) => {
-  const {
-    retries = 3,
-    timeout = 30000,
-    username = 'Blaise.Hansen@outlook.com',
-    token = '4ea68d98e7a911be3834fd98ff8bb3c9',
-    number,
-    service,
-    ...rest
-  } = opts
+const projects = require('./projects')
 
-  ow(number, ow.string.nonEmpty.label('number'))
-  ow(service, ow.string.nonEmpty.label('service'))
-  ow(opts, ow.object.plain.nonEmpty.label('opts'))
+const domainToSuffix = {
+  usa: 'usdo',
+  us: 'usdo',
+  china: 'do',
+  hk: 'do',
+  'asia': 'vndo',
+  'seasia': 'vndo'
+}
 
-  const pid = projects.serviceToPid(service.toLowerCase())
-  if (!pid) {
-    throw new Error(`unrecognized service "${service}"`)
+class GetSMSCodeClient {
+  constructor (opts) {
+    const {
+      username,
+      token,
+      domain = 'china'
+    } = opts
+
+    ow(username, ow.string.nonEmpty.label('username'))
+    ow(token, ow.string.nonEmpty.label('token'))
+    ow(domain, ow.string.nonEmpty.label('domain'))
+    ow(opts, ow.object.plain.nonEmpty.label('opts'))
+
+    this._token = token
+    this._username = username
+
+    const suffix = domainToSuffix[domain]
+    if (!suffix) throw new Error(`unknown domain "${domain}"`)
+    this._url = `http://www.getsmscode.com/${suffix}.php`
   }
 
-  return pRetry(async () => {
-    // vndo - SE Asia
-    // do - china
-    // usdo - usa (virtual)
+  async login () {
+    return this._request('login')
+  }
 
-    const result = await request({
-      url: 'http://www.getsmscode.com/do.php',
+  async getNumber (opts) {
+    const {
+      service,
+      pid = projects.serviceToPid(service.toLowerCase())
+    } = opts
+
+    if (!pid) throw new Error(`unrecognized service "${service}"`)
+    return this._request('getmobile', { pid })
+  }
+
+  async getNumbers () {
+    const numbers = await this._request('mobilelist')
+
+    return numbers.split(',')
+      .map((o) => {
+        const [ number, pid ] = o.split('|')
+        const service = projects.pidToService[pid]
+
+        return { number, service }
+      })
+  }
+
+  async getSMS (opts) {
+    const {
+      number,
+      service,
+      pid = projects.serviceToPid(service.toLowerCase())
+    } = opts
+
+    if (!pid) throw new Error(`unrecognized service "${service}"`)
+    const result = await this._request('getsms', { mobile: number, pid })
+
+    if (result.startsWith('1|')) {
+      return result.slice(2)
+    }
+
+    return result
+  }
+
+  async addNumberToBlacklist (opts) {
+    const {
+      number,
+      service,
+      pid = projects.serviceToPid(service.toLowerCase())
+    } = opts
+
+    if (!pid) throw new Error(`unrecognized service "${service}"`)
+    return this._request('getsms', { mobile: number, pid })
+  }
+
+  _request (action, params = { }) {
+    return request({
       method: 'POST',
+      url: this._url,
       qs: {
-        username,
-        token,
-        action: 'login'
+        action,
+        username: this._username,
+        token: this._token,
+        ...params
       }
     })
-
-    const result = await request({
-      url: 'http://www.getsmscode.com/do.php',
-      method: 'POST',
-      qs: {
-        username,
-        token,
-        pid,
-        action: 'getmobile'
-      }
-    })
-  }, {
-    retries,
-    maxTimeout: timeout,
-    ...rest
-  })
+  }
 }
+
+module.exports = GetSMSCodeClient
