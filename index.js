@@ -24,9 +24,9 @@ const countryCodes = new Set([
   'mm', // Myanmar
   'vn', // Vietnam
   'id', // Indonesia
-  'hk', // Hongkong
+  'hk', // Hong Kong
   'mo', // Macao
-  'th', // Tailand
+  'th', // Thailand
   'br', // Brazil
   'eg', // Egypt
   'za' // South Africa
