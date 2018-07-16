@@ -39,9 +39,12 @@
   ],
   "devDependencies": {
     "ava": "^0.25.0",
-    "standard": "^11.0.0"
+    "standard": "^11.0.0",
+    "validator": "^10.4.0"
   },
   "dependencies": {
-    "ow": "^0.6.0"
+    "ow": "^0.6.0",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5"
   }
 }

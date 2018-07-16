@@ -3,9 +3,12 @@
 const ow = require('ow')
 const request = require('request-promise-native')
 
-const projects = require('./projects')
+const projects = require('./lib/projects')
 
 const domainToSuffix = {
+  usdo: 'usdo',
+  vndo: 'vndo',
+  'do': 'do',
   usa: 'usdo',
   us: 'usdo',
   china: 'do',
@@ -15,10 +18,10 @@ const domainToSuffix = {
 }
 
 class GetSMSCodeClient {
-  constructor (opts) {
+  constructor (opts = { }) {
     const {
-      username,
-      token,
+      username = process.env.GETSMSCODE_USERNAME,
+      token = process.env.GETSMSCODE_TOKEN,
       domain = 'china'
     } = opts
 
@@ -31,7 +34,7 @@ class GetSMSCodeClient {
     this._username = username
 
     const suffix = domainToSuffix[domain]
-    if (!suffix) throw new Error(`unknown domain "${domain}"`)
+    if (!suffix) throw new Error(`unknown getsmscode domain "${domain}"`)
     this._url = `http://www.getsmscode.com/${suffix}.php`
   }
 
@@ -42,7 +45,7 @@ class GetSMSCodeClient {
   async getNumber (opts) {
     const {
       service,
-      pid = projects.serviceToPid(service.toLowerCase())
+      pid = projects.serviceToPID[service.toLowerCase()]
     } = opts
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
@@ -65,7 +68,7 @@ class GetSMSCodeClient {
     const {
       number,
       service,
-      pid = projects.serviceToPid(service.toLowerCase())
+      pid = projects.serviceToPID[service.toLowerCase()]
     } = opts
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
@@ -82,7 +85,7 @@ class GetSMSCodeClient {
     const {
       number,
       service,
-      pid = projects.serviceToPid(service.toLowerCase())
+      pid = projects.serviceToPID[service.toLowerCase()]
     } = opts
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
