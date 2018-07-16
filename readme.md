@@ -21,9 +21,9 @@ You'll need to setup a [getsmscode.com](http://www.getsmscode.com/) account and 
 ## Usage
 
 ```js
-const Client = require('getsmscode')
+const GetSMSCodeClient = require('getsmscode')
 
-const client = new Client({
+const client = new GetSMSCodeClient({
   username: '...',
   token: '...'
 })
