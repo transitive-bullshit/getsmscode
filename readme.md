@@ -32,6 +32,9 @@ const number = await client.getNumber({
   service: 'google'
 })
 
+// give this number to third-party service such as google...
+// third-party service sends SMS code to the given number...
+
 const sms = await client.getSMS({
   service: 'google',
   number: number
