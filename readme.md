@@ -2,7 +2,7 @@
 
 > API client for [getsmscode.com](http://www.getsmscode.com/)
 
-[![NPM](https://img.shields.io/npm/v/getsmscode.svg)](https://www.npmjs.com/package/getsmscode) [![Build Status](https://travis-ci.org/transitive-bullshit/getsmscode.svg?branch=master)](https://travis-ci.org/transitive-bullshit/getsmscode) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![NPM](https://img.shields.io/npm/v/getsmscode.svg)](https://www.npmjs.com/package/getsmscode) [![Build Status](https://travis-ci.com/transitive-bullshit/getsmscode.svg?branch=master)](https://travis-ci.com/transitive-bullshit/getsmscode) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 - provides temporary, physical mobile numbers (not virtual VOIP numbers!)
 - meant for automated systems that need to bypass SMS number verification
