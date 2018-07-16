@@ -1,6 +1,6 @@
 {
   "name": "getsmscode",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "API client for getsmscode.com",
   "main": "index.js",
   "repository": "transitive-bullshit/getsmscode",
