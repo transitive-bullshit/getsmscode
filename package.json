@@ -1,0 +1,64 @@
+{
+  "name": "getsmscode",
+  "version": "0.0.0",
+  "description": "API client for getsmscode.com",
+  "main": "index.js",
+  "repository": "transitive-bullshit/getsmscode",
+  "author": "Travis Fischer <travis@automagical.ai>",
+  "license": "MIT",
+  "reveal": true,
+  "scripts": {
+    "test": "ava -v && standard"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "keywords": [
+    "verify",
+    "verification",
+    "confirmation",
+    "activation",
+    "authentication",
+    "auth",
+    "code",
+    "pin",
+    "otp",
+    "login",
+    "security",
+    "number",
+    "phone",
+    "phone number",
+    "sms",
+    "getsmscode",
+    "getsmscode.com",
+    "2fac",
+    "2factor",
+    "2-fac",
+    "2-factor",
+    "2-step"
+  ],
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "standard": "^11.0.0",
+    "validator": "^10.1.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "co-body": "^6.0.0",
+    "koa": "^2.5.2",
+    "koa-router": "^7.4.0",
+    "ngrok": "^3.0.1",
+    "ow": "^0.6.0",
+    "p-event": "^2.1.0",
+    "p-memoize": "^1.0.0",
+    "p-retry": "^2.0.0",
+    "p-timeout": "^2.0.1",
+    "parse-otp-message": "^1.0.0",
+    "parsetime": "^0.2.9",
+    "pify": "^3.0.0",
+    "plivo": "^4.0.1",
+    "random-item": "^1.0.0",
+    "request": "^2.85.0",
+    "request-promise-native": "^1.0.5"
+  }
+}
