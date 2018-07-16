@@ -116,7 +116,7 @@ Type: `function (opts): Promise`
 
 ## Related
 
--   [sms-number-verifier](https://github.com/transitive-bullshit/) - Allows you to spoof SMS number verification.
+-   [sms-number-verifier](https://github.com/transitive-bullshit/sms-number-verifier) - Allows you to spoof SMS number verification.
 -   [parse-otp-message](https://github.com/transitive-bullshit/parse-otp-message) - Parses OTP messages for a verification code and service provider.
 
 ## Disclaimer
