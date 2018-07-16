@@ -17,6 +17,21 @@ const domainToSuffix = {
   'seasia': 'vndo'
 }
 
+const countryCodes = new Set([
+  'my', // Malaysia
+  'ph', // Philippines
+  'kh', // Cambodia
+  'mm', // Myanmar
+  'vn', // Vietnam
+  'id', // Indonesia
+  'hk', // Hongkong
+  'mo', // Macao
+  'th', // Tailand
+  'br', // Brazil
+  'eg', // Egypt
+  'za' // South Africa
+])
+
 /**
  * @class GetSMSCodeClient
  *
@@ -43,7 +58,9 @@ class GetSMSCodeClient {
 
     const suffix = domainToSuffix[domain]
     if (!suffix) throw new Error(`unknown getsmscode domain "${domain}"`)
+
     this._url = `http://www.getsmscode.com/${suffix}.php`
+    this._isCountryCodeRequired = (suffix === 'vndo')
   }
 
   /**
@@ -70,17 +87,24 @@ class GetSMSCodeClient {
    * @param {object} opts - Config options
    * @param {string} [opts.service] - Name of service to blacklist number
    * @param {string} [opts.pid] - Project ID of service to blacklist number
+   * @param {string} [opts.cocode] - Country code (required if using asian domain)
 
    * @return {Promise}
    */
   async getNumber (opts) {
     const {
       service,
-      pid = projects.serviceToPID[service.toLowerCase()]
+      pid = projects.serviceToPID[service.toLowerCase()],
+      cocode
     } = opts
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
-    const result = await this._request('getmobile', { pid })
+    if (this._isCountryCodeRequired) {
+      if (!cocode) throw new Error('cocode required')
+      if (!countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
+    }
+
+    const result = await this._request('getmobile', { pid, cocode })
 
     if (result.indexOf('|') >= 0) {
       throw new Error(result)
@@ -114,6 +138,7 @@ class GetSMSCodeClient {
    * @param {string} opts.number - Mobile number to blacklist
    * @param {string} [opts.service] - Name of service to blacklist number
    * @param {string} [opts.pid] - Project ID of service to blacklist number
+   * @param {string} [opts.cocode] - Country code (required if using asian domain)
 
    * @return {Promise}
    */
@@ -121,11 +146,17 @@ class GetSMSCodeClient {
     const {
       number,
       service,
-      pid = projects.serviceToPID[service.toLowerCase()]
+      pid = projects.serviceToPID[service.toLowerCase()],
+      cocode
     } = opts
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
-    const result = await this._request('getsms', { mobile: number, pid })
+    if (this._isCountryCodeRequired) {
+      if (!cocode) throw new Error('cocode required')
+      if (!countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
+    }
+
+    const result = await this._request('getsms', { mobile: number, pid, cocode })
 
     if (result.startsWith('1|')) {
       return result.slice(2)
@@ -143,6 +174,7 @@ class GetSMSCodeClient {
    * @param {string} opts.number - Mobile number to blacklist
    * @param {string} [opts.service] - Name of service to blacklist number
    * @param {string} [opts.pid] - Project ID of service to blacklist number
+   * @param {string} [opts.cocode] - Country code (required if using asian domain)
    *
    * @return {Promise}
    */
@@ -150,14 +182,24 @@ class GetSMSCodeClient {
     const {
       number,
       service,
-      pid = projects.serviceToPID[service.toLowerCase()]
+      pid = projects.serviceToPID[service.toLowerCase()],
+      cocode
     } = opts
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
-    return this._request('getsms', { mobile: number, pid })
+    if (this._isCountryCodeRequired) {
+      if (!cocode) throw new Error('cocode required')
+      if (!countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
+    }
+
+    return this._request('getsms', { mobile: number, pid, cocode })
   }
 
   _request (action, params = { }) {
+    if (!this._isCountryCodeRequired) {
+      delete params.cocode
+    }
+
     return request({
       method: 'POST',
       url: this._url,
