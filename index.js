@@ -13,6 +13,7 @@ const domainToSuffix = {
   us: 'usdo',
   china: 'do',
   hk: 'do',
+  cn: 'do',
   'asia': 'vndo',
   'seasia': 'vndo'
 }
@@ -42,16 +43,23 @@ const countryCodes = new Set([
  */
 class GetSMSCodeClient {
   constructor (opts = { }) {
-    const {
+    let {
       username = process.env.GETSMSCODE_USERNAME,
       token = process.env.GETSMSCODE_TOKEN,
-      domain = 'china'
+      domain = 'china',
+      cocode
     } = opts
 
     ow(username, ow.string.nonEmpty.label('username'))
     ow(token, ow.string.nonEmpty.label('token'))
     ow(domain, ow.string.nonEmpty.label('domain'))
     ow(opts, ow.object.plain.label('opts'))
+
+    if (cocode) {
+      domain = 'asia'
+      this._cocode = cocode
+      if (!countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
+    }
 
     this._token = token
     this._username = username
@@ -100,8 +108,8 @@ class GetSMSCodeClient {
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
     if (this._isCountryCodeRequired) {
-      if (!cocode) throw new Error('cocode required')
-      if (!countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
+      if (!this._cocode && !cocode) throw new Error('cocode required')
+      if (cocode && !countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
     }
 
     const result = await this._request('getmobile', { pid, cocode })
@@ -152,8 +160,8 @@ class GetSMSCodeClient {
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
     if (this._isCountryCodeRequired) {
-      if (!cocode) throw new Error('cocode required')
-      if (!countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
+      if (!this._cocode && !cocode) throw new Error('cocode required')
+      if (cocode && !countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
     }
 
     const result = await this._request('getsms', { mobile: number, pid, cocode })
@@ -188,8 +196,8 @@ class GetSMSCodeClient {
 
     if (!pid) throw new Error(`unrecognized service "${service}"`)
     if (this._isCountryCodeRequired) {
-      if (!cocode) throw new Error('cocode required')
-      if (!countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
+      if (!this._cocode && !cocode) throw new Error('cocode required')
+      if (cocode && !countryCodes.has(cocode)) throw new Error(`invalid cocode "${cocode}"`)
     }
 
     return this._request('getsms', { mobile: number, pid, cocode })
@@ -200,15 +208,23 @@ class GetSMSCodeClient {
       delete params.cocode
     }
 
+    const qs = {
+      action,
+      username: this._username,
+      token: this._token,
+      ...params
+    }
+
+    if (this._cocode) {
+      qs.cocode = qs.cocode || this._cocode
+    }
+
+    console.log('POST', this._url, JSON.stringify(qs, null, 2))
+
     return request({
       method: 'POST',
       url: this._url,
-      qs: {
-        action,
-        username: this._username,
-        token: this._token,
-        ...params
-      }
+      qs
     })
   }
 }
